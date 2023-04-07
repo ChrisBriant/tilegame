@@ -8,13 +8,20 @@
     <title>Document</title>
 </head>
 <body>
-    <header></header>
+    <header>
+        <h1>Grid Puzzle</h1>
+    </header>
     <main>
-        <section>
-            <canvas id="canvas"></canvas>
+        <section id="canvas-section">
+            <p>Click the tiles next to the blank piece to move the tile. Complete the picture to win!</p>
+            <div class="puzzle-border">
+                <canvas id="canvas"></canvas>
+            </div>
         </section>
     </main>
-    <footer></footer>
+    <footer>
+        <p>&copy Chris Briant <script>document.write(new Date().getFullYear());</script></p>
+    </footer>
     <script>
         let grid = [];
         let blankIndex = 0;
@@ -92,7 +99,9 @@
                         resolve();
                     }
 
-                    ctx.clearRect(clearX, clearY, clearWidth, clearHeight);
+                    //ctx.clearRect(clearX, clearY, clearWidth, clearHeight);
+                    ctx.fillStyle = `#ffffff`;
+                    ctx.fillRect(clearX, clearY, clearWidth, clearHeight);
                     //X Axis Translation
                     if(tile.moves.left) {
                         console.log('left');
@@ -195,9 +204,6 @@
 
 
         function loadGrid(ctx,segmentWidth,segmentHeight) {
-  
-            console.log('GRID IS', grid);
-
             // Loop through grid and place image
             let index = 0;
             for (let row = 0; row < 4; row++) {
@@ -378,9 +384,7 @@
                         segmentHeight,
                     );
                     if(isMouseOver) {
-                        console.log('Clicked', tile.x,tile.y);
                         await animateSlideTile(tile,ctx);
-                        console.log('FINISHED ANIMATING');
                         clearTiles(moveableTiles);
                         grid = swapGridItems(grid,tile.index,blankIndex);
                         //Create win condition     
