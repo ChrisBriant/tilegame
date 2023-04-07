@@ -19,6 +19,7 @@
         let blankIndex = 0;
         let originalGrid = [];
         let gameOver = false;
+        let sliding = false;
 
         function swapGridItems(grid,index1,index2) {
             const temp = grid[index1];
@@ -50,6 +51,81 @@
                 tile.brighten = false;
                 tile.dargen = false;
             });
+        }
+        
+        function animateSlideTile(tile,ctx) {
+            sliding = true;
+            return new Promise((resolve, reject) => {
+                let tileX = tile.x;
+                let tileY = tile.y;
+                let finishX = tile.x;
+                let finishY = tile.y;
+                let clearX = tile.x;
+                let clearY = tile.y;
+                let clearWidth = tile.width;
+                let clearHeight = tile.height;
+
+                if(tile.moves.right) {
+                    finishX = tile.x + tile.width;
+                    clearWidth = clearWidth*2;
+                }
+                if(tile.moves.left) {
+                    finishX = tile.x - tile.width;
+                    clearX = tile.x - tile.width;
+                    clearWidth = clearWidth*2;
+                }
+                if(tile.moves.up) {
+                    finishY = tile.y - tile.height;
+                    clearY = tile.y - tile.height;
+                    clearHeight =  clearHeight * 2;
+                }
+                if(tile.moves.down) {
+                    finishY = tile.y + tile.height;
+                    clearHeight =  clearHeight * 2;
+                }
+
+                const interval = setInterval(function() {
+                    if(tileX === finishX && tileY === finishY) {
+                        clearInterval(interval);
+                        sliding = false;
+                        resolve();
+                    }
+
+                    ctx.clearRect(clearX, clearY, clearWidth, clearHeight);
+                    //X Axis Translation
+                    if(tile.moves.left) {
+                        console.log('left');
+                        tileX -= 1;
+                    }
+                    if(tile.moves.right) {
+                        console.log('right');
+                        tileX += 1;
+                    }
+                    //Y Axis Translation
+                    if(tile.moves.up) {
+                        tileY -= 1;
+                    }
+                    if(tile.moves.down) {
+                        tileY += 1;
+                    }
+
+                    ctx.putImageData(tile.image, tileX, tileY);
+                },5);
+            });
+
+
+
+            // Clear the canvas
+            
+
+            // Increment the x position by the image width
+            //imageData.x += imageData.width;
+
+            // Draw the image at the new position
+            // ctx.drawImage(imageData.image, imageData.x, imageData.y);
+
+            // Request the next frame
+            //requestAnimationFrame(animate);
         }
 
         //Draws a white square on top to give the effect of brightening
@@ -145,26 +221,15 @@
                         //Grid X Axis logic
                         if(index % 4 === 3) {
                             grid[index-1].moves.right = true;
-                            //Set x y pos
-                            // grid[index-1].x = x - segmentWidth;
-                            // grid[index-1].y = y;
                         }
 
                         if(index % 4 === 0) {
                             grid[index+1].moves.left = true;
-                            //Set x y pos
-                            // grid[index+1].x = x + segmentWidth;
-                            // grid[index+1].y = y;
                         }
 
                         if(index % 4 !== 0 && index % 4 !== 3) {
                             grid[index-1].moves.right = true;
                             grid[index+1].moves.left = true;
-                            //Set x y pos
-                            // grid[index-1].x = x - segmentWidth;
-                            // grid[index-1].y = y;
-                            // grid[index+1].x = x + segmentWidth;
-                            // grid[index+1].y = y;
                         }
 
                         //Grid Y Axis logic
@@ -174,14 +239,10 @@
                         if(aboveIndex > 0) {
                             console.log(`${grid[aboveIndex]} at ${aboveIndex} can move down.` );
                             grid[aboveIndex].moves.down = true;
-                            // grid[aboveIndex].x = x;
-                            // grid[aboveIndex].y = y - segmentHeight;
                         }
                         if(belowIndex < 16) {
                             console.log(`${grid[belowIndex]} at ${belowIndex} can move up.` );
                             grid[belowIndex].moves.up = true;
-                            // grid[belowIndex].x = x;
-                            // grid[belowIndex].y = y + segmentHeight;
                         }
 
                     }
@@ -196,9 +257,6 @@
                     gameOver = true;
                 }
             }
-            
-
-
         }
 
         // MAIN
@@ -272,7 +330,7 @@
             
             //Add a listener to the canvas for mouse over events
             let mouseOverEvent = canvas.addEventListener('mousemove', event => {
-                if(gameOver) return;
+                if(gameOver || sliding) return;
 
                 const x = event.offsetX;
                 const y = event.offsetY;
@@ -304,13 +362,13 @@
 
             //Add a listener to the canvas for mouse click events
             let mouseClickEvent = canvas.addEventListener('click', event => {
-                if(gameOver) return;
+                if(gameOver || sliding) return;
 
                 const x = event.offsetX;
                 const y = event.offsetY;
                 let moveableTiles = getMovableTiles(grid);
 
-                moveableTiles.forEach(tile => {
+                moveableTiles.forEach(async tile => {
                     isMouseOver = isPointInTile(
                         event.offsetX,
                         event.offsetY,
@@ -321,9 +379,12 @@
                     );
                     if(isMouseOver) {
                         console.log('Clicked', tile.x,tile.y);
+                        await animateSlideTile(tile,ctx);
+                        console.log('FINISHED ANIMATING');
                         clearTiles(moveableTiles);
                         grid = swapGridItems(grid,tile.index,blankIndex);
-                        grid = originalGrid;
+                        //Create win condition     
+                        //grid = originalGrid;
                         loadGrid(ctx,segmentWidth,segmentHeight);
                     }
                 });
