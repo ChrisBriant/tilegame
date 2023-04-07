@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
     <title>Document</title>
 </head>
 <body>
@@ -113,6 +112,20 @@
                     ctx.putImageData(tile.image, tileX, tileY);
                 },5);
             });
+
+
+
+            // Clear the canvas
+            
+
+            // Increment the x position by the image width
+            //imageData.x += imageData.width;
+
+            // Draw the image at the new position
+            // ctx.drawImage(imageData.image, imageData.x, imageData.y);
+
+            // Request the next frame
+            //requestAnimationFrame(animate);
         }
 
         //Draws a white square on top to give the effect of brightening
@@ -163,7 +176,6 @@
             }
         }
 
-        //Get the tiles which can move
         function getMovableTiles(tileObjects) {
             let moveables = [];
 
@@ -177,21 +189,6 @@
             });
             return moveables;
         }
-
-        //Get the coordinates relative to where the user clicked in the canvas
-        function getRelativeClickCords() {
-            const rect = canvas.getBoundingClientRect();
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
-            const canvasX = x / rect.width * canvas.width;
-            const canvasY = y / rect.height * canvas.height;
-
-            return {
-                x : canvasX,
-                y : canvasY
-            };
-        }
-
 
 
         function loadGrid(ctx,segmentWidth,segmentHeight) {
@@ -335,12 +332,14 @@
             let mouseOverEvent = canvas.addEventListener('mousemove', event => {
                 if(gameOver || sliding) return;
 
-                const clickXY = getRelativeClickCords();
+                const x = event.offsetX;
+                const y = event.offsetY;
                 let moveableTiles = getMovableTiles(grid);
+
                 moveableTiles.forEach(tile => {
                     isMouseOver = isPointInTile(
-                        clickXY.x,
-                        clickXY.y,
+                        event.offsetX,
+                        event.offsetY,
                         tile.x,
                         tile.y,
                         segmentWidth,
@@ -365,13 +364,14 @@
             let mouseClickEvent = canvas.addEventListener('click', event => {
                 if(gameOver || sliding) return;
 
-                const clickXY = getRelativeClickCords();
+                const x = event.offsetX;
+                const y = event.offsetY;
                 let moveableTiles = getMovableTiles(grid);
 
                 moveableTiles.forEach(async tile => {
                     isMouseOver = isPointInTile(
-                        clickXY.x,
-                        clickXY.y,
+                        event.offsetX,
+                        event.offsetY,
                         tile.x,
                         tile.y,
                         segmentWidth,
