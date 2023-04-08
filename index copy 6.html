@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Grid Puzzle</title>
+    <title>Document</title>
 </head>
 <body>
     <header>
@@ -61,8 +61,8 @@
         }
 
         async function loadImage() {
-            const img = await getImage();
-            console.log('Awaited', img);
+            let image = await getImage();
+            console.log('Awaited', image);
             //img.src = image;
             // fetch(image).then(response => response.blob())
             // .then(blob => createImageBitmap(blob))
@@ -72,124 +72,7 @@
             // .catch(error => {
             //     console.error('Failed to load image', error);
             // });
-
-                        // Get the canvas element
-            const canvas = document.querySelector('#canvas');
-
-            // Set the canvas size to the image size
-            canvas.width = img.width;
-            canvas.height = img.height;
-
-            // Get the canvas context
-            const ctx = canvas.getContext("2d");
-
-            // Draw the image on the canvas
-            ctx.drawImage(img, 0, 0);
-
-            // Get the width and height of each segment
-            const segmentWidth = img.width / 4;
-            const segmentHeight = img.height / 4;
-
-            // Loop through each segment
-            let index = 0;
-            for (let row = 0; row < 4; row++) {
-                for (let col = 0; col < 4; col++) {
-                    // Get the x and y coordinates of the segment
-                    const x = col * segmentWidth;
-                    const y = row * segmentHeight;
-
-                    // Get the image data for the segment
-                    const imageData = ctx.getImageData(x, y, segmentWidth, segmentHeight);
-                    let imageTile = {
-                        image : imageData,
-                        moves : {
-                            left : false,
-                            right : false,
-                            up : false,
-                            down : false
-                        },
-                        originalPos: index,
-                        processing : false,
-                        brighten : false,
-                        darken : false,
-                        width : segmentWidth,
-                        height : segmentHeight,
-                    }
-                    grid.push(imageTile);
-                    index++;
-                }
-            }
-
-            // Remove the last piece and replace with a gap
-            grid.pop();
-            grid.push(null);
-            originalGrid = [...grid];
-            console.log('grid before shuffle', originalGrid);
-
-            // // Shuffle the pixel data
-            shuffle(grid);
-
-            // // Put the shuffled image data back onto the canvas
-            loadGrid(ctx,segmentWidth,segmentHeight);
-            
-            
-            //Add a listener to the canvas for mouse over events
-            let mouseOverEvent = canvas.addEventListener('mousemove', event => {
-                if(gameOver || sliding) return;
-
-                const clickXY = getRelativeClickCords();
-                let moveableTiles = getMovableTiles(grid);
-                moveableTiles.forEach(tile => {
-                    isMouseOver = isPointInTile(
-                        clickXY.x,
-                        clickXY.y,
-                        tile.x,
-                        tile.y,
-                        segmentWidth,
-                        segmentHeight,
-                    );
-                    if(isMouseOver && !tile.brighten) {
-                        console.log('CALLING BRIGHTEN');
-                        tile.brighten = true;
-                        tile.darken = false;
-                        brightenImageSegment(tile,ctx);
-                    }
-                    if(!isMouseOver && tile.brighten && !tile.darken) {
-                        console.log('CALLING DARKEN');
-                        tile.brighten = false;
-                        tile.darken = true;
-                        brightenImageSegment(tile,ctx,true);
-                    }
-                });
-            });
-
-            //Add a listener to the canvas for mouse click events
-            let mouseClickEvent = canvas.addEventListener('click', event => {
-                if(gameOver || sliding) return;
-
-                const clickXY = getRelativeClickCords();
-                let moveableTiles = getMovableTiles(grid);
-
-                moveableTiles.forEach(async tile => {
-                    isMouseOver = isPointInTile(
-                        clickXY.x,
-                        clickXY.y,
-                        tile.x,
-                        tile.y,
-                        segmentWidth,
-                        segmentHeight,
-                    );
-                    if(isMouseOver) {
-                        await animateSlideTile(tile,ctx);
-                        clearTiles(moveableTiles);
-                        grid = swapGridItems(grid,tile.index,blankIndex);
-                        //Create win condition     
-                        //grid = originalGrid;
-                        loadGrid(ctx,segmentWidth,segmentHeight);
-                    }
-                });
-            });
-            //return image;
+            return image;
         }
 
         function swapGridItems(grid,index1,index2) {
@@ -434,132 +317,132 @@
         // MAIN
         // Create an image object
         //const img = new Image();
-        loadImage();
-        //console.log(img);
+        const img = loadImage();
+        console.log(img);
 
         // Set the image source
         //const loadedImage = loadImage(img);        
         //img.src = "img/image.png";
 
         // Wait for the image to load
-        // img.onload = function() {
-        //     // Get the canvas element
-        //     const canvas = document.querySelector('#canvas');
+        img.onload = function() {
+            // Get the canvas element
+            const canvas = document.querySelector('#canvas');
 
-        //     // Set the canvas size to the image size
-        //     canvas.width = img.width;
-        //     canvas.height = img.height;
+            // Set the canvas size to the image size
+            canvas.width = img.width;
+            canvas.height = img.height;
 
-        //     // Get the canvas context
-        //     const ctx = canvas.getContext("2d");
+            // Get the canvas context
+            const ctx = canvas.getContext("2d");
 
-        //     // Draw the image on the canvas
-        //     ctx.drawImage(img, 0, 0);
+            // Draw the image on the canvas
+            ctx.drawImage(img, 0, 0);
 
-        //     // Get the width and height of each segment
-        //     const segmentWidth = img.width / 4;
-        //     const segmentHeight = img.height / 4;
+            // Get the width and height of each segment
+            const segmentWidth = img.width / 4;
+            const segmentHeight = img.height / 4;
 
-        //     // Loop through each segment
-        //     let index = 0;
-        //     for (let row = 0; row < 4; row++) {
-        //         for (let col = 0; col < 4; col++) {
-        //             // Get the x and y coordinates of the segment
-        //             const x = col * segmentWidth;
-        //             const y = row * segmentHeight;
+            // Loop through each segment
+            let index = 0;
+            for (let row = 0; row < 4; row++) {
+                for (let col = 0; col < 4; col++) {
+                    // Get the x and y coordinates of the segment
+                    const x = col * segmentWidth;
+                    const y = row * segmentHeight;
 
-        //             // Get the image data for the segment
-        //             const imageData = ctx.getImageData(x, y, segmentWidth, segmentHeight);
-        //             let imageTile = {
-        //                 image : imageData,
-        //                 moves : {
-        //                     left : false,
-        //                     right : false,
-        //                     up : false,
-        //                     down : false
-        //                 },
-        //                 originalPos: index,
-        //                 processing : false,
-        //                 brighten : false,
-        //                 darken : false,
-        //                 width : segmentWidth,
-        //                 height : segmentHeight,
-        //             }
-        //             grid.push(imageTile);
-        //             index++;
-        //         }
-        //     }
+                    // Get the image data for the segment
+                    const imageData = ctx.getImageData(x, y, segmentWidth, segmentHeight);
+                    let imageTile = {
+                        image : imageData,
+                        moves : {
+                            left : false,
+                            right : false,
+                            up : false,
+                            down : false
+                        },
+                        originalPos: index,
+                        processing : false,
+                        brighten : false,
+                        darken : false,
+                        width : segmentWidth,
+                        height : segmentHeight,
+                    }
+                    grid.push(imageTile);
+                    index++;
+                }
+            }
 
-        //     // Remove the last piece and replace with a gap
-        //     grid.pop();
-        //     grid.push(null);
-        //     originalGrid = [...grid];
-        //     console.log('grid before shuffle', originalGrid);
+            // Remove the last piece and replace with a gap
+            grid.pop();
+            grid.push(null);
+            originalGrid = [...grid];
+            console.log('grid before shuffle', originalGrid);
 
-        //     // // Shuffle the pixel data
-        //     shuffle(grid);
+            // // Shuffle the pixel data
+            shuffle(grid);
 
-        //     // // Put the shuffled image data back onto the canvas
-        //     loadGrid(ctx,segmentWidth,segmentHeight);
+            // // Put the shuffled image data back onto the canvas
+            loadGrid(ctx,segmentWidth,segmentHeight);
             
             
-        //     //Add a listener to the canvas for mouse over events
-        //     let mouseOverEvent = canvas.addEventListener('mousemove', event => {
-        //         if(gameOver || sliding) return;
+            //Add a listener to the canvas for mouse over events
+            let mouseOverEvent = canvas.addEventListener('mousemove', event => {
+                if(gameOver || sliding) return;
 
-        //         const clickXY = getRelativeClickCords();
-        //         let moveableTiles = getMovableTiles(grid);
-        //         moveableTiles.forEach(tile => {
-        //             isMouseOver = isPointInTile(
-        //                 clickXY.x,
-        //                 clickXY.y,
-        //                 tile.x,
-        //                 tile.y,
-        //                 segmentWidth,
-        //                 segmentHeight,
-        //             );
-        //             if(isMouseOver && !tile.brighten) {
-        //                 console.log('CALLING BRIGHTEN');
-        //                 tile.brighten = true;
-        //                 tile.darken = false;
-        //                 brightenImageSegment(tile,ctx);
-        //             }
-        //             if(!isMouseOver && tile.brighten && !tile.darken) {
-        //                 console.log('CALLING DARKEN');
-        //                 tile.brighten = false;
-        //                 tile.darken = true;
-        //                 brightenImageSegment(tile,ctx,true);
-        //             }
-        //         });
-        //     });
+                const clickXY = getRelativeClickCords();
+                let moveableTiles = getMovableTiles(grid);
+                moveableTiles.forEach(tile => {
+                    isMouseOver = isPointInTile(
+                        clickXY.x,
+                        clickXY.y,
+                        tile.x,
+                        tile.y,
+                        segmentWidth,
+                        segmentHeight,
+                    );
+                    if(isMouseOver && !tile.brighten) {
+                        console.log('CALLING BRIGHTEN');
+                        tile.brighten = true;
+                        tile.darken = false;
+                        brightenImageSegment(tile,ctx);
+                    }
+                    if(!isMouseOver && tile.brighten && !tile.darken) {
+                        console.log('CALLING DARKEN');
+                        tile.brighten = false;
+                        tile.darken = true;
+                        brightenImageSegment(tile,ctx,true);
+                    }
+                });
+            });
 
-        //     //Add a listener to the canvas for mouse click events
-        //     let mouseClickEvent = canvas.addEventListener('click', event => {
-        //         if(gameOver || sliding) return;
+            //Add a listener to the canvas for mouse click events
+            let mouseClickEvent = canvas.addEventListener('click', event => {
+                if(gameOver || sliding) return;
 
-        //         const clickXY = getRelativeClickCords();
-        //         let moveableTiles = getMovableTiles(grid);
+                const clickXY = getRelativeClickCords();
+                let moveableTiles = getMovableTiles(grid);
 
-        //         moveableTiles.forEach(async tile => {
-        //             isMouseOver = isPointInTile(
-        //                 clickXY.x,
-        //                 clickXY.y,
-        //                 tile.x,
-        //                 tile.y,
-        //                 segmentWidth,
-        //                 segmentHeight,
-        //             );
-        //             if(isMouseOver) {
-        //                 await animateSlideTile(tile,ctx);
-        //                 clearTiles(moveableTiles);
-        //                 grid = swapGridItems(grid,tile.index,blankIndex);
-        //                 //Create win condition     
-        //                 //grid = originalGrid;
-        //                 loadGrid(ctx,segmentWidth,segmentHeight);
-        //             }
-        //         });
-        //     });
-        // };
+                moveableTiles.forEach(async tile => {
+                    isMouseOver = isPointInTile(
+                        clickXY.x,
+                        clickXY.y,
+                        tile.x,
+                        tile.y,
+                        segmentWidth,
+                        segmentHeight,
+                    );
+                    if(isMouseOver) {
+                        await animateSlideTile(tile,ctx);
+                        clearTiles(moveableTiles);
+                        grid = swapGridItems(grid,tile.index,blankIndex);
+                        //Create win condition     
+                        //grid = originalGrid;
+                        loadGrid(ctx,segmentWidth,segmentHeight);
+                    }
+                });
+            });
+        };
     </script>
 </body>
 </html>
